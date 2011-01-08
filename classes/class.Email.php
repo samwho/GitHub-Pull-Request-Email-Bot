@@ -7,20 +7,21 @@ require_once 'class.Config.php';
  * @author Sam Rose
  */
 class Email {
+    /**
+     *
+     *
+     * @param String $content
+     */
     public static function send($content) {
         $config = Config::getInstance();
 
+        // properly handle an array of email addresses
         if (is_array($config['email_to'])) {
             foreach($config['email_to'] as $to) {
                 self::send_mail($to, $content);
             }
         } else {
-            if (self::send_mail($config['email_to'], $content)) {
-                echo "woot";
-            }
-            else {
-                echo "not woot";
-            }
+            self::send_mail($config['email_to'], $content);
         }
     }
 

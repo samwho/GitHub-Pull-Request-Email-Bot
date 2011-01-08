@@ -2,6 +2,8 @@
 /**
  * Static class to return the config array.
  *
+ * Draws its information from config.inc.php
+ *
  * @author Sam Rose
  */
 class Config {
@@ -30,21 +32,6 @@ class Config {
         }
         //Return the $config class variable
         return self::$config;
-    }
-
-    /**
-     * Returns the table name for a table of your choice concatenated with the
-     * prefix.
-     *
-     * Options for the $table argument:
-     *
-     * 'requests' - the pull requests table
-     * 'users' - the users table
-     * 
-     * @return String $table
-     */
-    public static function getTableName($table) {
-        return PullRequestDatabase::getTableName($table);
     }
 }
 ?>

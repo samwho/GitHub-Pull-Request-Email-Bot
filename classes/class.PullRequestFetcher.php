@@ -1,16 +1,20 @@
 <?php
+require_once 'class.WebPage.php';
+require_once 'class.Config.php';
 /**
  * Class to fetch pull request data from a repository.
  *
  * @author Sam Rose
  */
-
-require_once 'class.WebPage.php';
-require_once 'class.Config.php';
-
 class PullRequestFetcher {
 
-    private $last_pull_file_name = 'last_pull.txt';
+    /**
+     * The location of the file that contains the number of the last pull
+     * request emailed about.
+     *
+     * @var String $last_pull_file_name
+     */
+    private $last_pull_file_name = 'data/last_pull.txt';
 
     /**
      * An associative array of pull requests.
