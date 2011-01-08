@@ -1,6 +1,4 @@
 <?php
-require_once 'class.PullRequestDatabase.php';
-
 /**
  * Static class to return the config array.
  *

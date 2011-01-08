@@ -36,11 +36,21 @@ class PullRequestCrawl {
         if (count($requests) > 0) {
             //Send the requests all in one email
             if ($this->config['group_requests']) {
+
                 $formatted_pull_requests = '';
                 foreach ($requests as $request) {
                     $formatted_pull_requests .= TemplateParser::parse(
                             'templates/pull_request_group.tpl', $request);
                 }
+
+                $group_email_placeholders =
+                    array('pull_requests' => $formatted_pull_requests);
+                
+                $content = TemplateParser::parse(
+                        'templates/group_request_email.tpl', $request, $group_email_placeholders);
+
+                Email::send($content);
+
             } else {
                 //Send requests in multiple emails
                 foreach ($requests as $request) {
