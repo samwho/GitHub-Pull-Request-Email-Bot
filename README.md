@@ -9,7 +9,7 @@ It works by adding the run.php file to a Cron job and running it fairly often
 (though it doesn't really matter how long you leave it, it remembers what
 pull request it emailed you about last and won't email duplicates).
 
-It was written originally written for the [[ThinkUp|http://thinkupapp.com]]
+It was written originally written for the [ThinkUp](http://thinkupapp.com)
 project to post pull requests to the mailing list and promote code review.
 
 ## How does it work?
