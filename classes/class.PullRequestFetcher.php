@@ -32,7 +32,7 @@ class PullRequestFetcher {
 
     public function __construct() {
         $this->config = Config::getInstance();
-        $this->requests = json_decode(WebPage::get($this->requestUrl()))->pulls;
+        $this->requests = json_decode(WebPage::get($this->requestUrl(), $this->config['server_name']))->pulls;
     }
 
     /**

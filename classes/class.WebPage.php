@@ -24,7 +24,7 @@ class WebPage {
     /**
      * Get a web file from a URL.
      */
-    public static function get($url) {
+    public static function get($url, $server_name) {
         //Check the cache first.
         if (self::$cache[$url] != null) {
             return self::$cache[$url];
@@ -38,7 +38,7 @@ class WebPage {
                 CURLOPT_ENCODING => "", // handle all encodings
                 CURLOPT_USERAGENT => "GitHub Pull Request Bot", // who am i
                 CURLOPT_AUTOREFERER => true, // set referer on redirect
-                CURLOPT_REFERER => $_SERVER['HTTPS'] ? 'https://' . $_SERVER['SERVER_NAME'] : 'http://' . $_SERVER['SERVER_NAME'], //setting the referer
+                CURLOPT_REFERER => isset($_SERVER['HTTPS']) ? 'https://' . $server_name : 'http://' . $server_name, //setting the referer
                 CURLOPT_CONNECTTIMEOUT => 120, // timeout on connect
                 CURLOPT_TIMEOUT => 120, // timeout on response
                 CURLOPT_MAXREDIRS => 10, // stop after 10 redirects

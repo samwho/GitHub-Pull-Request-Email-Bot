@@ -26,7 +26,7 @@ class Config {
         //If the $config class variable is not set
         if (!isset(self::$config) || $new == true) {
             //Fetch the config file
-            include_once __DIR__.'/../config.inc.php';
+            include_once dirname(__FILE__).'/../config.inc.php';
             //Set the $config class variable to the array in the config file
             self::$config = $PULL_REQUEST_BOT;
         }
