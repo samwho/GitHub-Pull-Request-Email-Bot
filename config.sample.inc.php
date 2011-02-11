@@ -2,6 +2,9 @@
 /* 
  * This config file contains all of the information required for this code
  * to work. Please ensure that it is all correct.
+ *
+ * You need to copy this and name the copy "config.inc.php" to ensure that
+ * your settings get loaded and the program works.
  */
 
 /*

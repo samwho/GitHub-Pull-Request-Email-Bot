@@ -16,8 +16,9 @@ project to post pull requests to the mailing list and promote code review.
 
 There are only a few files that you as a user need to worry about:
 
-config.inc.php - This is where all of the configuration information is stored.
-You will need to change this file to make it suit your purpose.
+config.sample.inc.php - This is where all of the configuration information is
+stored. You will need to cmake a copy of this file and make all necessary
+changes to make it suit your purposes.
 
 run.php - This is the file you will need to attach to a Cron job. This file is
 where the magic happens: pull requests are crawled, the crawler filters out the

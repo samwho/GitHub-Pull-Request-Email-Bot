@@ -7,7 +7,7 @@ It is, however, pretty customisable. By default, placeholders are delimited
 the square brackets and the plus symbols.
 
 All template parsing happens in classes/class.TemplateParser.php. In this class
-you can change the delimiters and you can change the tokens.
+you can change the delimiters and you can change the tokens (if you want to).
 
 The currently available tokens are:
 
@@ -35,3 +35,6 @@ set the 'group_requests' to false, this is the .tpl file that will be used.
 config file, this .tpl is used FOR EACH PULL REQUEST. It is for a SINGLE PULL
 REQUEST. All pull requests will be formatted like this. Look at
 'group_request_email.tpl' for the formatting of the entire email.
+
+'pull_request_single_subject_line.tpl' - This is the email subject line for
+single pull request emails. 
