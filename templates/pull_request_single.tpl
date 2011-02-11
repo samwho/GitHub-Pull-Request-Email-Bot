@@ -1,13 +1,17 @@
-<html>
-    <head>
-    </head>
-    <body>
-    [+gravatar+]
-    <h3>[+user_login+] has issued a new pull request:</h3>
+Hi ThinkUp developers,
 
-    <h2>[+title+]</h2>
-    <p>[+body+]</p>
-    <br /><br />
-    Link: [+link+]
-    </body>
-</html>
+[+user_login+] has issued a new pull request.
+
+Title: [+title+]
+Description: [+body+]
+
+Link: [+link+]
+
+Please review the patch and leave any comments/feedback you have inline on GitHub, or reply to this email.
+
+Thanks for helping us code review ThinkUp.
+
+Best,
+Gina
+
+[This is an automated email to the ThinkUp Developers mailing list. Any time you issue a pull request on GitHub, this mailing list will be notified automatically.]

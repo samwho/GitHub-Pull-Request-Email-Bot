@@ -56,7 +56,9 @@ class PullRequestCrawl {
                 foreach ($requests as $request) {
                     $content = TemplateParser::parse(
                             'templates/pull_request_single.tpl', $request);
-                    Email::send($content);
+                    $subject = TemplateParser::parse(
+                            'templates/pull_request_single_subject_line.tpl', $request);
+                    Email::send($content, $subject);
                 }
             }
 

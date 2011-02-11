@@ -12,20 +12,20 @@ class Email {
      *
      * @param String $content
      */
-    public static function send($content) {
+    public static function send($content, $subject=null) {
         $config = Config::getInstance();
 
         // properly handle an array of email addresses
         if (is_array($config['email_to'])) {
             foreach($config['email_to'] as $to) {
-                self::send_mail($to, $content);
+                self::send_mail($to, $content, $subject);
             }
         } else {
-            self::send_mail($config['email_to'], $content);
+            self::send_mail($config['email_to'], $content, $subject);
         }
     }
 
-    private static function send_mail($to, $content) {
+    private static function send_mail($to, $content, $subject=null) {
         $config = Config::getInstance();
 
         $additional_headers = '';
@@ -39,7 +39,10 @@ class Email {
             $additional_headers .= 'Content-Type: text/html'."\r\n";
         }
         
-        return mail($to, $config['email_subject'], $content, $additional_headers);
+        if (!isset($subject)) {
+            $subject = $config['email_subject'];
+        }
+        return mail($to, $subject, $content, $additional_headers);
     }
 }
 ?>

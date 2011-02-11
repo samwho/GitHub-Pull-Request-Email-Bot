@@ -40,11 +40,8 @@ class TemplateParser {
     private static function getPlaceholders($request) {
         return array(
             'title' => $request->title,
-            'user_real_name' => $request->user->name,
             'user_login' => $request->user->login,
             'gravatar_id' => $request->user->gravatar_id,
-            'gravatar' => '<img src="http://www.gravatar.com/avatar/'.
-                $request->user->gravatar_id.'" alt="'.$request->user->name.'\'s Gravatar" />',
             'created_at' => $request->created_at,
             'body' => $request->body,
             'link' => $request->html_url
