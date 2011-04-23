@@ -47,7 +47,7 @@ class PullRequestCrawl {
     public function run() {
         $this->checkForNewPulls();
         
-        if ($this->config['alert_on_close'] == true) {
+        if ($this->config->getValue('alert_on_close') == true) {
             $this->checkPullsClosed();
         }
     }
@@ -60,11 +60,11 @@ class PullRequestCrawl {
 
             // save new requests
             foreach ($this->new_requests as $request) {
-                file_put_contents($this->config['data_dir'] . '/' . $request->number . '.json', json_encode($request));
+                file_put_contents($this->config->getValue('data_dir') . '/' . $request->number . '.json', json_encode($request));
             }
 
             //Send the requests all in one email
-            if ($this->config['group_requests']) {
+            if ($this->config->getValue('group_requests')) {
 
                 $formatted_pull_requests = '';
                 foreach ($this->new_requests as $request) {
@@ -97,14 +97,14 @@ class PullRequestCrawl {
      * Checks to see if any of the previously scanned pull requests have been closed.
      */
     private function checkPullsClosed() {
-        if ($this->config['group_requests']) {
+        if ($this->config->getValue('group_requests')) {
             $formatted_closed_requests = '';
             foreach ($this->old_requests as $number=>$request) {
                 $request = $this->fetcher->updatePullRequestInfo($number);
                 if ($request->state == 'closed') {
                     $formatted_closed_requests .= TemplateParser::parse('_closed.tpl', $request);
 
-                    unlink($this->config['data_dir'] . '/' .$request->number. '.json');
+                    unlink($this->config->getValue('data_dir') . '/' .$request->number. '.json');
                 }
             }
 
@@ -131,7 +131,7 @@ class PullRequestCrawl {
                     $subject = TemplateParser::parse('single_closed_subject.tpl', $request);
                     Email::send($content, $subject);
 
-                    unlink($this->config['data_dir'] . '/' .$request->number. '.json');
+                    unlink($this->config->getValue('data_dir') . '/' .$request->number. '.json');
                 }
             }
         }

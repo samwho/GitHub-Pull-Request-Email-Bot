@@ -14,12 +14,12 @@ class Email {
         $config = Config::getInstance();
 
         // properly handle an array of email addresses
-        if (is_array($config['email_to'])) {
-            foreach($config['email_to'] as $to) {
+        if (is_array($config->getValue('email_to'))) {
+            foreach($config->getValue('email_to') as $to) {
                 self::send_mail($to, $content, $subject);
             }
         } else {
-            self::send_mail($config['email_to'], $content, $subject);
+            self::send_mail($config->getValue('email_to'), $content, $subject);
         }
     }
 
@@ -27,23 +27,23 @@ class Email {
         $config = Config::getInstance();
 
         $additional_headers = '';
-        if ($config['reply_to'] != '') {
-            $additional_headers .= 'Reply-To: '.$config['reply_to']."\r\n";
+        if ($config->getValue('reply_to') != '') {
+            $additional_headers .= 'Reply-To: '.$config->getValue('reply_to')."\r\n";
         }
-        if ($config['email_from'] != '') {
-            $additional_headers .= 'From: '.$config['email_from']."\r\n";
+        if ($config->getValue('email_from') != '') {
+            $additional_headers .= 'From: '.$config->getValue('email_from')."\r\n";
         }
-        if ($config['email_use_html']) {
+        if ($config->getValue('email_use_html')) {
             $additional_headers .= 'Content-Type: text/html'."\r\n";
         }
         
         if (!isset($subject)) {
-            $subject = $config['email_subject'];
+            $subject = $config->getValue('email_subject');
         }
 
-        if (is_writeable($config['debug_dir']) && $config['debug'] == true) {
+        if (is_writeable($config->getValue('debug_dir')) && $config->getValue('debug') == true) {
             $message = $additional_headers . "To: " . $to . "\r\nSubject: " . $subject . "\r\nContent: " . $content;
-            file_put_contents($config['debug_dir'] . '/last_email_sent.txt', $message);
+            file_put_contents($config->getValue('debug_dir') . '/last_email_sent.txt', $message);
         }
 
         return mail($to, $subject, $content, $additional_headers);

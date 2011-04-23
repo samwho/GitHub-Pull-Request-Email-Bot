@@ -32,8 +32,8 @@ class PullRequestFetcher {
         $this->config = Config::getInstance();
         $this->requests = $this->getPullRequests();
 
-        if (is_writeable($this->config['debug_dir']) && $this->config['debug'] == true) {
-            file_put_contents($this->config['debug_dir'] . '/last_request.json', print_r($this->requests, true));
+        if (is_writeable($this->config->getValue('debug_dir')) && $this->config->getValue('debug') == true) {
+            file_put_contents($this->config->getValue('debug_dir') . '/last_request.json', print_r($this->requests, true));
         }
     }
 
@@ -69,15 +69,15 @@ class PullRequestFetcher {
         switch ($which) {
             case 'open':
                 return 'http://github.com/api/v2/json/pulls/'.
-                $this->config['repo_user'].'/'.$this->config['repo_name'].'/open';
+                $this->config->getValue('repo_user').'/'.$this->config->getValue('repo_name').'/open';
                 break;
             case 'closed':
                 return 'http://github.com/api/v2/json/pulls/'.
-                $this->config['repo_user'].'/'.$this->config['repo_name'].'/closed';
+                $this->config->getValue('repo_user').'/'.$this->config->getValue('repo_name').'/closed';
                 break;
             default:
                 return 'http://github.com/api/v2/json/pulls/'.
-                $this->config['repo_user'].'/'.$this->config['repo_name'];
+                $this->config->getValue('repo_user').'/'.$this->config->getValue('repo_name');
         }
     }
 
@@ -93,12 +93,12 @@ class PullRequestFetcher {
         $pull_request = str_replace('.json', '', $pull_request);
 
         $url = 'http://github.com/api/v2/json/pulls/'.
-                $this->config['repo_user'].'/'.$this->config['repo_name'].'/'.intval($pull_request);
+                $this->config->getValue('repo_user').'/'.$this->config->getValue('repo_name').'/'.intval($pull_request);
 
         $url_contents = json_decode(WebPage::get($url));
         
         if (!empty ($url_contents)) {
-            file_put_contents($this->config['data_dir'] . '/' . $pull_request . '.json', 
+            file_put_contents($this->config->getValue('data_dir') . '/' . $pull_request . '.json',
                     json_encode($url_contents->pull));
             return $url_contents->pull;
         } else {
@@ -115,8 +115,8 @@ class PullRequestFetcher {
     public function getPullRequestComments($pull_request) {
         // strip the file type off if it exists
         $pull_request = intval(str_replace('.json', '', $pull_request));
-        if (file_exists($this->config['data_dir'] . '/' . $pull_request . '.json')) {
-            $request = json_decode(file_get_contents($this->config['data_dir'] . '/' .
+        if (file_exists($this->config->getValue('data_dir') . '/' . $pull_request . '.json')) {
+            $request = json_decode(file_get_contents($this->config->getValue('data_dir') . '/' .
                     $pull_request . '.json'));
             $discussion = array_filter($request->discussion, __CLASS__.'::filterPullRequestComments');
         } else {
@@ -129,7 +129,7 @@ class PullRequestFetcher {
      * reference.
      */
     public function saveLatestPull() {
-        return file_put_contents($this->config['data_dir'] . '/' . $this->last_pull_file_name,
+        return file_put_contents($this->config->getValue('data_dir') . '/' . $this->last_pull_file_name,
                 $this->requests[0]->number);
     }
 
@@ -139,8 +139,8 @@ class PullRequestFetcher {
      * @return String $number
      */
     public function getLatestPull() {
-        if (file_exists($this->config['data_dir'] . '/' . $this->last_pull_file_name)) {
-            return intval(file_get_contents($this->config['data_dir'] . '/' . $this->last_pull_file_name));
+        if (file_exists($this->config->getValue('data_dir') . '/' . $this->last_pull_file_name)) {
+            return intval(file_get_contents($this->config->getValue('data_dir') . '/' . $this->last_pull_file_name));
         } else {
             return -1;
         }
@@ -152,7 +152,7 @@ class PullRequestFetcher {
      * For testing puposes only.
      */
     public function deleteLatestPull() {
-        unlink($this->config['data_dir'] . '/' . $this->last_pull_file_name);
+        unlink($this->config->getValue('data_dir') . '/' . $this->last_pull_file_name);
     }
 
     /**
@@ -180,9 +180,9 @@ class PullRequestFetcher {
      */
     public function getOldPullRequests() {
         $return = array();
-        $dir = array_filter(scandir($this->config['data_dir']) , __CLASS__.'::filterPullRequestFiles');
+        $dir = array_filter(scandir($this->config->getValue('data_dir')) , __CLASS__.'::filterPullRequestFiles');
         foreach ($dir as $file) {
-            $return[str_replace('.json', '', $file)] = json_decode(file_get_contents($this->config['data_dir'] . '/' .
+            $return[str_replace('.json', '', $file)] = json_decode(file_get_contents($this->config->getValue('data_dir') . '/' .
                     $file));
         }
         return $return;

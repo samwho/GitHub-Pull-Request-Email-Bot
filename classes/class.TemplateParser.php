@@ -38,18 +38,22 @@ class TemplateParser {
      * @return Array $placeholders
      */
     private static function getPlaceholders($request) {
-        return array(
-            'title' => $request->title,
-            'user_login' => $request->user->login,
-            'gravatar_id' => $request->user->gravatar_id,
-            'created_at' => $request->created_at,
-            'body' => $request->body,
-            'link' => $request->html_url,
-            'user_real_name' => isset($request->user->name) ? $request->user->name : $request->user->login,
-            'date_today' => strftime('%D'),
-            'state' => $request->state,
-            'number' => $request->number
-        );
+        if (is_object($request)) {
+            return array(
+                'title' => $request->title,
+                'user_login' => $request->user->login,
+                'gravatar_id' => $request->user->gravatar_id,
+                'created_at' => $request->created_at,
+                'body' => $request->body,
+                'link' => $request->html_url,
+                'user_real_name' => isset($request->user->name) ? $request->user->name : $request->user->login,
+                'date_today' => strftime('%D'),
+                'state' => $request->state,
+                'number' => $request->number
+            );
+        } else {
+            return array();
+        }
     }
 
     /**
@@ -60,12 +64,12 @@ class TemplateParser {
      * @param stdObject $request
      * @param Array $placeholders
      */
-    public static function parse($template, $request, $placeholders = null) {
+    public static function parse($template, $request = null, $placeholders = null) {
         $config = Config::getInstance();
-        $placeholders = $placeholders ? array_merge($placeholders, self::getPlaceholders($request)) :
+        $placeholders = is_array($placeholders) ? array_merge($placeholders, self::getPlaceholders($request)) :
                 self::getPlaceholders($request);
 
-        $template = file_get_contents($config['templates_dir'] . '/' . $template);
+        $template = file_get_contents($config->getValue('templates_dir') . '/' . $template);
         foreach ($placeholders as $search=>$replace) {
             $template = str_replace(
                     self::$open_delimiter.$search.self::$close_delimiter,

@@ -8,16 +8,16 @@ if (!WebPage::checkWorks()) {
     exit;
 }
 
-if (!is_writeable($config['data_dir'])) {
-    echo 'The data directory "'.$config['data_dir'].'" needs to be writable by the server to run this script.' . "\n";
+if (!is_writeable($config->getValue('data_dir'))) {
+    echo 'The data directory "'.$config->getValue('data_dir').'" needs to be writable by the server to run this script.' . "\n";
     exit;
 }
 
-if (!is_readable($config['templates_dir'])) {
-    echo 'The templates directory "'.$config['data_dir'].'" needs to be readable by the server to run this script.' . "\n";
+if (!is_readable($config->getValue('templates_dir'))) {
+    echo 'The templates directory "'.$config->getValue('data_dir').'" needs to be readable by the server to run this script.' . "\n";
     exit;
 }
 
-if ($config['debug']) {
+if ($config->getValue('debug')) {
     error_reporting(E_ALL);
 }

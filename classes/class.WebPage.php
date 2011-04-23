@@ -39,8 +39,8 @@ class WebPage {
                 CURLOPT_ENCODING => "", // handle all encodings
                 CURLOPT_USERAGENT => "GitHub Pull Request Bot", // who am i
                 CURLOPT_AUTOREFERER => true, // set referer on redirect
-                CURLOPT_REFERER => isset($_SERVER['HTTPS']) ? 'https://' . $config['server_name'] :
-                    'http://' . $config['server_name'],
+                CURLOPT_REFERER => isset($_SERVER['HTTPS']) ? 'https://' . $config->getValue('server_name') :
+                    'http://' . $config->getValue('server_name'),
                 CURLOPT_CONNECTTIMEOUT => 120, // timeout on connect
                 CURLOPT_TIMEOUT => 120, // timeout on response
                 CURLOPT_MAXREDIRS => 10, // stop after 10 redirects

@@ -35,5 +35,19 @@ class Loader {
             require_once $file_name;
             return;
         }
+
+        $path = dirname(__FILE__) . '/../tests/classes/';
+        $file_name = $path . 'mock.' . $class . '.php';
+        if ( file_exists( $file_name )) {
+            require_once $file_name;
+            return;
+        }
+
+        $path = dirname(__FILE__) . '/../tests/';
+        $file_name = $path . $class . '.php';
+        if ( file_exists( $file_name )) {
+            require_once $file_name;
+            return;
+        }
     }
 }
