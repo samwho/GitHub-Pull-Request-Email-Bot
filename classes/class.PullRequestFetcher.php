@@ -28,8 +28,16 @@ class PullRequestFetcher {
      */
     private $config;
 
-    public function __construct() {
+    public function __construct($username = null, $repo = null) {
         $this->config = Config::getInstance();
+
+        if (!is_null($username)) {
+            $this->config->setValue('repo_user', $username);
+        }
+        if (!is_null($repo)) {
+            $this->config->setValue('repo_name', $repo);
+        }
+        
         $this->requests = $this->getPullRequests();
 
         if (is_writeable($this->config->getValue('debug_dir')) && $this->config->getValue('debug') == true) {
