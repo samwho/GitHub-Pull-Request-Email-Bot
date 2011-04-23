@@ -1,7 +1,4 @@
 <?php
-require_once 'classes/class.PullRequestCrawl.php';
-
+require_once dirname(__FILE__) . '/init.php';
 $crawler = new PullRequestCrawl();
-
 $crawler->run();
-?>

@@ -3,10 +3,8 @@
  * This file is entirely for just small bits of code that I want to test on
  * the fly.
  */
-
-require_once '../classes/class.PullRequestFetcher.php';
+require_once dirname(__FILE__) . '/../init.php';
 
 $fetcher = new PullRequestFetcher();
-echo $fetcher->requestUrl();
-$fetcher->showRequests();
+print_r($fetcher->getOldPullRequests());
 ?>

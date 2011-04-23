@@ -1,6 +1,4 @@
 <?php
-require_once 'class.Config.php';
-
 /**
  * A simple class for sending emails.
  *
@@ -8,7 +6,7 @@ require_once 'class.Config.php';
  */
 class Email {
     /**
-     *
+     * Sends an email.
      *
      * @param String $content
      */
@@ -42,7 +40,12 @@ class Email {
         if (!isset($subject)) {
             $subject = $config['email_subject'];
         }
+
+        if (is_writeable($config['debug_dir']) && $config['debug'] == true) {
+            $message = $additional_headers . "To: " . $to . "\r\nSubject: " . $subject . "\r\nContent: " . $content;
+            file_put_contents($config['debug_dir'] . '/last_email_sent.txt', $message);
+        }
+
         return mail($to, $subject, $content, $additional_headers);
     }
 }
-?>

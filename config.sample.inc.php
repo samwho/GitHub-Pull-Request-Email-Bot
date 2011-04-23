@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  * This config file contains all of the information required for this code
  * to work. Please ensure that it is all correct.
  *
@@ -34,12 +34,18 @@ $PULL_REQUEST_BOT['group_requests'] = true;
  */
 
 // The user that created the repo.
-$PULL_REQUEST_BOT['repo_user'] = 'username';
+$PULL_REQUEST_BOT['repo_user'] = '';
 
 // The name of the repo.
-$PULL_REQUEST_BOT['repo_name'] = 'Project';
+$PULL_REQUEST_BOT['repo_name'] = '';
 
-// The name of the calling server
-$PULL_REQUEST_BOT['server_name'] = 'http://example.com';
+// The domain name of your server (sent as part of the email headers and URL requests as a referrer). Don't include the
+// http://, this is automatically added.
+$PULL_REQUEST_BOT['server_name'] = 'example.com';
 
-?>
+/*
+ * DEVELOPER VARIABLES
+ */
+
+// debug mode
+$PULL_REQUEST_BOT['debug'] = false;

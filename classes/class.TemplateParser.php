@@ -44,7 +44,10 @@ class TemplateParser {
             'gravatar_id' => $request->user->gravatar_id,
             'created_at' => $request->created_at,
             'body' => $request->body,
-            'link' => $request->html_url
+            'link' => $request->html_url,
+            'user_real_name' => isset($request->user->name) ? $request->user->name : $request->user->login,
+            'date_today' => strftime('%c'),
+            'state' => $request->state
         );
     }
 
@@ -57,7 +60,8 @@ class TemplateParser {
      * @param Array $placeholders
      */
     public static function parse($template, $request, $placeholders = null) {
-        $placeholders = $placeholders ? $placeholders : self::getPlaceholders($request);
+        $placeholders = $placeholders ? array_merge($placeholders, self::getPlaceholders($request)) :
+                self::getPlaceholders($request);
 
         $template = file_get_contents($template);
         foreach ($placeholders as $search=>$replace) {
@@ -71,4 +75,3 @@ class TemplateParser {
         return $template;
     }
 }
-?>

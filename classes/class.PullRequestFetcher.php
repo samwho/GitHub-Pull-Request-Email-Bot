@@ -1,6 +1,4 @@
 <?php
-require_once 'class.WebPage.php';
-require_once 'class.Config.php';
 /**
  * Class to fetch pull request data from a repository.
  *
@@ -14,7 +12,7 @@ class PullRequestFetcher {
      *
      * @var String $last_pull_file_name
      */
-    private $last_pull_file_name = 'data/last_pull.txt';
+    private $last_pull_file_name = 'last_pull.txt';
 
     /**
      * An associative array of pull requests.
@@ -32,7 +30,20 @@ class PullRequestFetcher {
 
     public function __construct() {
         $this->config = Config::getInstance();
-        $this->requests = json_decode(WebPage::get($this->requestUrl(), $this->config['server_name']))->pulls;
+        $this->requests = $this->getPullRequests();
+
+        if (is_writeable($this->config['debug_dir']) && $this->config['debug'] == true) {
+            file_put_contents($this->config['debug_dir'] . '/last_request.json', print_r($this->requests, true));
+        }
+    }
+
+    /**
+     * Gets a list of the configurated repo's pull requests.
+     * 
+     * @return array A json_decoded array of pull requests on the repo in the config. 
+     */
+    public function getPullRequests() {
+        return json_decode(WebPage::get($this->listRequestsUrl()))->pulls;
     }
 
     /**
@@ -54,7 +65,7 @@ class PullRequestFetcher {
      *
      * @return String $api_request_url
      */
-    public function requestUrl($which = 'open') {
+    private function listRequestsUrl($which = 'open') {
         switch ($which) {
             case 'open':
                 return 'http://github.com/api/v2/json/pulls/'.
@@ -71,12 +82,55 @@ class PullRequestFetcher {
     }
 
     /**
+     * Returns information on a specific pull request. Also updates that pull request's information in the data
+     * directory.
+     *
+     * @param str $pull_request
+     * @return array json_decoded information on the pull request.
+     */
+    public function updatePullRequestInfo($pull_request) {
+        // strip the file type off if it exists
+        $pull_request = str_replace('.json', '', $pull_request);
+
+        $url = 'http://github.com/api/v2/json/pulls/'.
+                $this->config['repo_user'].'/'.$this->config['repo_name'].'/'.intval($pull_request);
+
+        $url_contents = json_decode(WebPage::get($url));
+        
+        if (!empty ($url_contents)) {
+            file_put_contents($this->config['data_dir'] . '/' . $pull_request . '.json', 
+                    json_encode($url_contents->pull));
+            return $url_contents->pull;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Gets the comments on a particular pull request.
+     *
+     * @param int $pull_request
+     * @return array Comments.
+     */
+    public function getPullRequestComments($pull_request) {
+        // strip the file type off if it exists
+        $pull_request = intval(str_replace('.json', '', $pull_request));
+        if (file_exists($this->config['data_dir'] . '/' . $pull_request . '.json')) {
+            $request = json_decode(file_get_contents($this->config['data_dir'] . '/' .
+                    $pull_request . '.json'));
+            $discussion = array_filter($request->discussion, __CLASS__.'::filterPullRequestComments');
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * Saves the number of the latest pull request in a file for future
      * reference.
      */
     public function saveLatestPull() {
-        $file = fopen($this->last_pull_file_name, 'w');
-        fwrite($file, $this->requests[0]->number);
+        return file_put_contents($this->config['data_dir'] . '/' . $this->last_pull_file_name,
+                $this->requests[0]->number);
     }
 
     /**
@@ -85,7 +139,7 @@ class PullRequestFetcher {
      * @return String $number
      */
     public function getLatestPull() {
-        return intval(file_get_contents($this->last_pull_file_name));
+        return intval(file_get_contents($this->config['data_dir'] . '/' . $this->last_pull_file_name));
     }
 
     /**
@@ -94,7 +148,7 @@ class PullRequestFetcher {
      * For testing puposes only.
      */
     public function deleteLatestPull() {
-        unlink($this->last_pull_file_name);
+        unlink($this->config['data_dir'] . '/' . $this->last_pull_file_name);
     }
 
     /**
@@ -114,5 +168,42 @@ class PullRequestFetcher {
 
         return $return_array;
     }
+
+    /**
+     * Returns an associative array of pull requests that have already been fetched before.
+     *
+     * @return array Associative array of PullRequestNumber => JSON Contents.
+     */
+    public function getOldPullRequests() {
+        $return = array();
+        $dir = array_filter(scandir($this->config['data_dir']) , __CLASS__.'::filterPullRequestFiles');
+        foreach ($dir as $file) {
+            $return[str_replace('.json', '', $file)] = file_get_contents($this->config['data_dir'] . '/' . $file);
+        }
+        return $return;
+    }
+
+    /**
+     * Determines whether or not a filename is the name of a specific pull request file.
+     * 
+     * @param str $file Path to file.
+     * @return bool True if the file is a pull request json file, false otherwise.
+     */
+    private static function filterPullRequestFiles($file) {
+        return preg_match('/[0-9]+\.json/', $file);
+    }
+
+    /**
+     * Determines whether or not a comment on a pull request is to be emailed.
+     *
+     * @param stdClass $comment
+     * @return bool
+     */
+    private static function filterPullRequestComments($comment) {
+        if ($comment->type == 'IssueComment') {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
-?>

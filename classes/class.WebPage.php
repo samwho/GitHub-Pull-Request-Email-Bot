@@ -1,5 +1,4 @@
 <?php
-
 /**
  * A class to fetch the contents of web pages.
  *
@@ -19,16 +18,18 @@ class WebPage {
      * 
      * @var Array $cache
      */
-    private static $cache;
+    private static $cache = array();
     
     /**
      * Get a web file from a URL.
      */
-    public static function get($url, $server_name) {
+    public static function get($url) {
         //Check the cache first.
-        if (self::$cache[$url] != null) {
+        if (isset(self::$cache[$url])) {
             return self::$cache[$url];
         }
+
+        $config = Config::getInstance();
 
         if (self::get_curl()) {
             $options = array(
@@ -38,7 +39,8 @@ class WebPage {
                 CURLOPT_ENCODING => "", // handle all encodings
                 CURLOPT_USERAGENT => "GitHub Pull Request Bot", // who am i
                 CURLOPT_AUTOREFERER => true, // set referer on redirect
-                CURLOPT_REFERER => isset($_SERVER['HTTPS']) ? 'https://' . $server_name : 'http://' . $server_name, //setting the referer
+                CURLOPT_REFERER => isset($_SERVER['HTTPS']) ? 'https://' . $config['server_name'] :
+                    'http://' . $config['server_name'],
                 CURLOPT_CONNECTTIMEOUT => 120, // timeout on connect
                 CURLOPT_TIMEOUT => 120, // timeout on response
                 CURLOPT_MAXREDIRS => 10, // stop after 10 redirects
@@ -121,7 +123,7 @@ class WebPage {
      */
     public static function emptyCache($url = null) {
         if ($url == null) {
-            self::$cache = null;
+            self::$cache = array();
         } else {
             self::$cache[$url] = null;
         }
@@ -137,4 +139,3 @@ class WebPage {
     }
 
 }
-?>
