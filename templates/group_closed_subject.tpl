@@ -1,0 +1,1 @@
+Pull Requests Closed [+date_today+]

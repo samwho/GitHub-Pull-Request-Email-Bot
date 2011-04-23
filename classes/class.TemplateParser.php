@@ -46,8 +46,9 @@ class TemplateParser {
             'body' => $request->body,
             'link' => $request->html_url,
             'user_real_name' => isset($request->user->name) ? $request->user->name : $request->user->login,
-            'date_today' => strftime('%c'),
-            'state' => $request->state
+            'date_today' => strftime('%D'),
+            'state' => $request->state,
+            'number' => $request->number
         );
     }
 
@@ -60,10 +61,11 @@ class TemplateParser {
      * @param Array $placeholders
      */
     public static function parse($template, $request, $placeholders = null) {
+        $config = Config::getInstance();
         $placeholders = $placeholders ? array_merge($placeholders, self::getPlaceholders($request)) :
                 self::getPlaceholders($request);
 
-        $template = file_get_contents($template);
+        $template = file_get_contents($config['templates_dir'] . '/' . $template);
         foreach ($placeholders as $search=>$replace) {
             $template = str_replace(
                     self::$open_delimiter.$search.self::$close_delimiter,

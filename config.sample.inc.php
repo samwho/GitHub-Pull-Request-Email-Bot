@@ -29,6 +29,9 @@ $PULL_REQUEST_BOT['email_use_html'] = true;
 // Set this to true if you want to group multiple pull requests into one email.
 $PULL_REQUEST_BOT['group_requests'] = true;
 
+// Whether or not to receieve alerts when a pull request is closed.
+$PULL_REQUEST_BOT['alert_on_close'] = true;
+
 /*
  * Details for the repository you want to fetch pull requests from.
  */

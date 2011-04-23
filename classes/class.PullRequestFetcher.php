@@ -139,7 +139,11 @@ class PullRequestFetcher {
      * @return String $number
      */
     public function getLatestPull() {
-        return intval(file_get_contents($this->config['data_dir'] . '/' . $this->last_pull_file_name));
+        if (file_exists($this->config['data_dir'] . '/' . $this->last_pull_file_name)) {
+            return intval(file_get_contents($this->config['data_dir'] . '/' . $this->last_pull_file_name));
+        } else {
+            return -1;
+        }
     }
 
     /**
@@ -157,7 +161,7 @@ class PullRequestFetcher {
      * @return Array $array
      */
     public function getRequestsSinceLastCrawl() {
-        $latest_pull = $this->getLatestPull() ? $this->getLatestPull() : -1;
+        $latest_pull = $this->getLatestPull();
 
         $return_array = array();
         foreach ($this->requests as $request) {
@@ -178,7 +182,8 @@ class PullRequestFetcher {
         $return = array();
         $dir = array_filter(scandir($this->config['data_dir']) , __CLASS__.'::filterPullRequestFiles');
         foreach ($dir as $file) {
-            $return[str_replace('.json', '', $file)] = file_get_contents($this->config['data_dir'] . '/' . $file);
+            $return[str_replace('.json', '', $file)] = json_decode(file_get_contents($this->config['data_dir'] . '/' .
+                    $file));
         }
         return $return;
     }

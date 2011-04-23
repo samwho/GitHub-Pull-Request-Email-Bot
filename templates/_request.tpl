@@ -1,0 +1,1 @@
+<a href="[+link+]">[+title+]</a> by [+user_real_name+]<br />

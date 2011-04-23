@@ -41,11 +41,20 @@ class PullRequestCrawl {
         $this->new_requests = $this->fetcher->getRequestsSinceLastCrawl();
     }
 
+    /**
+     * Runs the crawl process. This is essentially the "main" method of this program. It is the entry point.
+     */
     public function run() {
         $this->checkForNewPulls();
-        $this->checkPullsClosed();
+        
+        if ($this->config['alert_on_close'] == true) {
+            $this->checkPullsClosed();
+        }
     }
 
+    /**
+     * Checks for new pull requests and sends emails if it finds any.
+     */
     private function checkForNewPulls() {
         if (count($this->new_requests) > 0) {
 
@@ -59,29 +68,24 @@ class PullRequestCrawl {
 
                 $formatted_pull_requests = '';
                 foreach ($this->new_requests as $request) {
-                    $formatted_pull_requests .= TemplateParser::parse(
-                            $this->config['templates_dir'] . '/pull_request_group.tpl', $request);
+                    $formatted_pull_requests .= TemplateParser::parse('_request.tpl', $request);
                 }
 
                 $group_email_placeholders =
                     array('pull_requests' => $formatted_pull_requests);
 
-                $content = TemplateParser::parse(
-                        $this->config['templates_dir'] . '/group_request_email.tpl', $request,
+                $content = TemplateParser::parse('group_request.tpl', $request,
                         $group_email_placeholders);
 
-                $subject = TemplateParser::parse(
-                            $this->config['templates_dir'] . '/pull_request_group_subject_line.tpl', $request);
+                $subject = TemplateParser::parse('group_request_subject.tpl', $request);
 
                 Email::send($content, $subject);
 
             } else {
                 //Send requests in multiple emails
                 foreach ($this->new_requests as $request) {
-                    $content = TemplateParser::parse(
-                            $this->config['templates_dir'] . '/pull_request_single.tpl', $request);
-                    $subject = TemplateParser::parse(
-                            $this->config['templates_dir'] . '/pull_request_single_subject_line.tpl', $request);
+                    $content = TemplateParser::parse('single_request.tpl', $request);
+                    $subject = TemplateParser::parse('single_request_subject.tpl', $request);
                     Email::send($content, $subject);
                 }
             }
@@ -98,8 +102,7 @@ class PullRequestCrawl {
             foreach ($this->old_requests as $number=>$request) {
                 $request = $this->fetcher->updatePullRequestInfo($number);
                 if ($request->state == 'closed') {
-                    $formatted_closed_requests .= TemplateParser::parse(
-                            $this->config['templates_dir'] . '/pull_request_closed_single.tpl', $request);
+                    $formatted_closed_requests .= TemplateParser::parse('_closed.tpl', $request);
 
                     unlink($this->config['data_dir'] . '/' .$request->number. '.json');
                 }
@@ -114,21 +117,18 @@ class PullRequestCrawl {
                 'closed_requests' => $formatted_closed_requests
             );
 
-            $content = TemplateParser::parse(
-                        $this->config['templates_dir'] . '/group_closed_email.tpl', $request,
+            $content = TemplateParser::parse('group_closed.tpl', $request,
                         $group_email_placeholders);
 
-            $subject = 'Re: ' . TemplateParser::parse(
-                        $this->config['templates_dir'] . '/pull_request_group_subject_line.tpl', $request);
+            $subject = TemplateParser::parse('group_closed_subject.tpl', $request);
             Email::send($content, $subject);
         } else {
-            foreach ($this->old_requests as $request) {
+            foreach ($this->old_requests as $number=>$request) {
                 $request = $this->fetcher->updatePullRequestInfo($number);
+                
                 if ($request->state == 'closed') {
-                    $content = TemplateParser::parse(
-                            $this->config['templates_dir'] . '/pull_request_closed.tpl', $request);
-                    $subject = 'Re: ' . TemplateParser::parse(
-                            $this->config['templates_dir'] . '/pull_request_single_subject_line.tpl', $request);
+                    $content = TemplateParser::parse('single_closed.tpl', $request);
+                    $subject = TemplateParser::parse('single_closed_subject.tpl', $request);
                     Email::send($content, $subject);
 
                     unlink($this->config['data_dir'] . '/' .$request->number. '.json');

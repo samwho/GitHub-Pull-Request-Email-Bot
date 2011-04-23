@@ -1,0 +1,1 @@
+Pull Request Closed: "[+title+]" by [+user_login+]
